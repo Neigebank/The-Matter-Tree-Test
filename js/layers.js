@@ -35,6 +35,7 @@ addLayer("m", {
             title: "More Matter.",
             description: "Matter boosts point gain.",
             cost: new ExpantaNum(3),
+            unlocked() {if (hasUpgrade('m', 11)) {return true} else {return false}},
             effect() {if (hasUpgrade('m', 21)) {return ((player[this.layer].points.add(1).log10().mul(2)).add(1)).times(1.5)} else {return (player[this.layer].points.add(1).log10().mul(2)).add(1)}},
             effectDisplay() {return "×" + format(upgradeEffect(this.layer, this.id))},
         },
@@ -42,6 +43,7 @@ addLayer("m", {
             title: "Synergism.",
             description: "Points boost matter gain.",
             cost: new ExpantaNum(10),
+            unlocked() {if (hasUpgrade('m', 12)) {return true} else {return false}},
             effect() {if (hasUpgrade('m', 21)) {return ((player.points.add(1).log10().div(2)).add(1)).times(1.5)} else {return (player.points.add(1).log10().div(2)).add(1)}},
             effectDisplay() {return "×" + format(upgradeEffect(this.layer, this.id))},
         },
@@ -49,11 +51,13 @@ addLayer("m", {
             title: "Booster.",
             description: "All first row upgrade effects are multiplied by ×1.5.",
             cost: new ExpantaNum(25),
+            unlocked() {if (hasUpgrade('m', 13)) {return true} else {return false}},
         },
         22: {
             title: "Upgrade Powerer.",
             description: "Each upgrade boosts point gain by ×1.3.",
             cost: new ExpantaNum(100),
+            unlocked() {if (hasUpgrade('m', 21)) {return true} else {return false}},
             effect() {return new ExpantaNum(1.3).pow(player[this.layer].upgrades.length)},
             effectDisplay() {return "×" + format(upgradeEffect(this.layer, this.id))},
         },
@@ -61,9 +65,30 @@ addLayer("m", {
             title: "Narcissism.",
             description: "Points boost themselves.",
             cost: new ExpantaNum(300),
+            unlocked() {if (hasUpgrade('m', 22)) {return true} else {return false}},
             effect() {return player.points.pow(0.1).add(1)},
             effectDisplay() {return "×" + format(upgradeEffect(this.layer, this.id))},
+        },
+        31: {
+            title: "New Concepts.",
+            description: "Unlock your first buyable.",
+            cost: new ExpantaNum(1000),
+            unlocked() {if (hasUpgrade('m', 23)) {return true} else {return false}},
         }
+    },
+    buyables: {
+        11: {
+            title: "Point Multipicator.",
+            display() {return "Triple point gain per purchase.<br><br>Cost formula: 1,000 × 8<sup style='font-size: 105%; line-height: 0px;'>x</sup><br>Cost: " + format(this.cost()) + "<br>Amount: " + getBuyableAmount(this.layer,   this.id) + "<br>Currently: ×"},
+            cost(x) {return new (ExpantaNum(8)).pow(x).mul(1000)},
+            canAfford() {return player[this.layer].points.gte(this.cost())}
+        }
+    },
+    infoboxes: {
+        lore: {
+            title: "Introductions.",
+            body() { return "The goal of this game is to make it reach incredibly high values, while at the same time progressing very gradually.<br><br><i>Hope you enjoy it.</i>" },
+        },
     },
     layerShown(){return true}
 })
