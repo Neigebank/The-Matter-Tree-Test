@@ -16,6 +16,7 @@ addLayer("m", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new ExpantaNum(1)
         if (hasUpgrade('m', 13)) mult = mult.times(upgradeEffect('m', 13))
+        if (hasUpgrade('m', 31)) mult = mult.times(2)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -71,7 +72,7 @@ addLayer("m", {
         },
         31: {
             title: "New Concepts.",
-            description: "Unlock your first buyable.",
+            description: "Unlock your first buyable and double matter gain.",
             cost: new ExpantaNum(1000),
             unlocked() {if (hasUpgrade('m', 23)) {return true} else {return false}},
         }
@@ -79,11 +80,15 @@ addLayer("m", {
     buyables: {
         11: {
             title: "Point Multipicator.",
-            display() {return "Triple point gain per purchase.<br><br>Cost formula: 1,000 × 8<sup style='font-size: 105%; line-height: 0px;'>x</sup><br>Cost: " + format(this.cost()) + "<br>Amount: " + getBuyableAmount(this.layer,   this.id) + "<br>Currently: ×"},
-            cost(x) {return new (ExpantaNum(8)).pow(x).mul(1000)},
-            canAfford() {return player[this.layer].points.gte(this.cost())}
-        }
+            display() {return "<br>Triple point gain.<br><br><br>Cost formula: 1,000 × 8<sup style='font-size: 105%; line-height: 0px;'>x</sup><br>Cost: " + format(this.cost()) + "<br>Amount: " + getBuyableAmount(this.layer, this.id) + "<br>Currently: ×" + format(buyableEffect(this.layer, this.id))},
+            cost() {return (new ExpantaNum(8)).pow(getBuyableAmount(this.layer, this.id)).mul(1000)},
+            canAfford() {return player[this.layer].points.gte(this.cost())},
+            buy() {player[this.layer].points = player[this.layer].points.sub(this.cost()); setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))},
+            effect() {return (new ExpantaNum(3)).pow(getBuyableAmount(this.layer, this.id))},
+            unlocked() {return hasUpgrade(this.layer, 31)}
+        },
     },
+
     infoboxes: {
         lore: {
             title: "Introductions.",
