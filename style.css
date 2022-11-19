@@ -9,6 +9,7 @@
 	margin: auto;
 	-webkit-text-size-adjust: none;
 	text-size-adjust: none;
+	letter-spacing: -0.15px;
 }
 
 *:focus {
@@ -63,6 +64,7 @@ td {
 h1, h2, h3, b, input {
 	display: inline;
 	font-family: 'Source Code Pro';
+	letter-spacing: -0.15px;
 }
 
 
@@ -413,6 +415,7 @@ a {
 	-webkit-text-stroke-width: 1px;
 	-webkit-text-stroke-color: #02f2f2;
 	text-decoration: none;
+	letter-spacing: -0.15px;
 }
 
 .link:hover {
@@ -604,6 +607,7 @@ ul {
 	border-radius: 3px;
 	opacity: 0;
 	transition: opacity 0.5s;
+	letter-spacing: -0.15px;	
   
 	position: absolute;
 	z-index: 20000 ;
@@ -683,6 +687,7 @@ button > * {
     border: none;
     padding: 2px;
     border-radius: 8px 8px 0 0;
+	letter-spacing: -0.6px;
 }
 
 .story-toggle {

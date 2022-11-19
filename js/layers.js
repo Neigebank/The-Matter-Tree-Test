@@ -17,6 +17,7 @@ addLayer("m", {
         mult = new ExpantaNum(1)
         if (hasUpgrade('m', 13)) mult = mult.times(upgradeEffect('m', 13))
         if (hasUpgrade('m', 31)) mult = mult.times(2)
+        if (hasUpgrade('m', 32)) mult = mult.times(upgradeEffect('m', 32).matter)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -24,7 +25,7 @@ addLayer("m", {
     },
     row: 0, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "p", description: "P: Reset for prestige points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "m", description: "M: Reset for matter.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     upgrades: {
         11: {
@@ -75,8 +76,17 @@ addLayer("m", {
             description: "Unlock your first buyable and double matter gain.",
             cost: new ExpantaNum(1000),
             unlocked() {if (hasUpgrade('m', 23)) {return true} else {return false}},
+        },
+        32: {
+            title: "Time is Key.",
+            description: "Time since last reset boosts points and matter.",
+            cost: new ExpantaNum(5000),
+            effect() {return {points: new ExpantaNum(Math.log10(player[this.layer].resetTime + 1) * 2 + 1), matter: new ExpantaNum(Math.log10(player[this.layer].resetTime + 1) + 1)}},
+            fullDisplay() {return  "<h3>Time is Key.</h3><br>" + "<span>Time since last reset boosts points and matter.</span><br>" + "Effects: ×" + format(upgradeEffect(this.layer, this.id).points) + ", " + "×" + format(upgradeEffect(this.layer, this.id).matter) + "<br><br>Cost: " + "5,000" + " matter"},
+            unlocked() {if (hasUpgrade('m', 31)) {return true} else {return false}},
         }
     },
+
     buyables: {
         11: {
             title: "Point Multipicator.",
