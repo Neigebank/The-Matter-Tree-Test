@@ -18,6 +18,7 @@ addLayer("m", {
         if (hasUpgrade('m', 13)) mult = mult.times(upgradeEffect('m', 13))
         if (hasUpgrade('m', 31)) mult = mult.times(2)
         if (hasUpgrade('m', 32)) mult = mult.times(upgradeEffect('m', 32).matter)
+        if (hasUpgrade('m', 33)) mult = mult.times(2)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -30,7 +31,7 @@ addLayer("m", {
     upgrades: {
         11: {
             title: "Humble Beginnings.",
-            description: "Double point gain.",
+            description() {if(hasUpgrade('m', 21)) {return "Triple point gain."} else {return "Double point gain."}},
             cost: new ExpantaNum(1),
         },
         12: {
@@ -84,14 +85,20 @@ addLayer("m", {
             effect() {return {points: new ExpantaNum(Math.log10(player[this.layer].resetTime + 1) * 2 + 1), matter: new ExpantaNum(Math.log10(player[this.layer].resetTime + 1) + 1)}},
             fullDisplay() {return  "<h3>Time is Key.</h3><br>" + "<span>Time since last reset boosts points and matter.</span><br>" + "Effects: ×" + format(upgradeEffect(this.layer, this.id).points) + ", " + "×" + format(upgradeEffect(this.layer, this.id).matter) + "<br><br>Cost: " + "5,000" + " matter"},
             unlocked() {if (hasUpgrade('m', 31)) {return true} else {return false}},
+        },
+        33: {
+            title: "Supermatter.",
+            description: "Unlock a new layer and double matter gain again.",
+            cost: new ExpantaNum(25000),
+            unlocked() {if (hasUpgrade('m', 32)) {return true} else {return false}}
         }
     },
 
     buyables: {
         11: {
             title: "Point Multipicator.",
-            display() {return "<br>Triple point gain.<br><br><br>Cost formula: 1,000 × 8<sup style='font-size: 105%; line-height: 0px;'>x</sup><br>Cost: " + format(this.cost()) + "<br>Amount: " + getBuyableAmount(this.layer, this.id) + "<br>Currently: ×" + format(buyableEffect(this.layer, this.id))},
-            cost() {return (new ExpantaNum(8)).pow(getBuyableAmount(this.layer, this.id)).mul(1000)},
+            display() {return "<br>Triple point gain every time you buy this.<br><br><br>Cost formula: 1,000 × 6<sup style='font-size: 105%; line-height: 0px;'>x</sup><br>Cost: " + format(this.cost()) + "<br>Amount: " + getBuyableAmount(this.layer, this.id) + "<br>Currently: ×" + format(buyableEffect(this.layer, this.id))},
+            cost() {return (new ExpantaNum(6)).pow(getBuyableAmount(this.layer, this.id)).mul(1000)},
             canAfford() {return player[this.layer].points.gte(this.cost())},
             buy() {player[this.layer].points = player[this.layer].points.sub(this.cost()); setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))},
             effect() {return (new ExpantaNum(3)).pow(getBuyableAmount(this.layer, this.id))},
@@ -105,5 +112,39 @@ addLayer("m", {
             body() { return "The goal of this game is to make it reach incredibly high values, while at the same time progressing very gradually.<br><br><i>Hope you enjoy it.</i>" },
         },
     },
+    layerShown(){return true}
+})
+
+addLayer("sm", {
+    name: "supermatter", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "SM", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: 1, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    startData() {return {
+        unlocked() {return false},
+		points: new ExpantaNum(0),
+    }},
+    effect() {return 3},
+    branches: ["m"],
+    requires() {return 100000},
+    effectDescription() {return "which are generating " +  + " power every second."},
+    color: "#70c2db",
+    power: new ExpantaNum(0),
+    requires: new ExpantaNum(100000), // Can be a function that takes requirement increases into account
+    resource: "supermatter", // Name of prestige currency
+    baseResource: "matter", // Name of resource prestige is based on
+    baseAmount() {return player.m.points}, // Get the current amount of baseResource
+    type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+    exponent: 0.5, // Prestige currency exponent
+    gainMult() { // Calculate the multiplier for main currency from bonuses
+        mult = new ExpantaNum(1)
+        return mult
+    },
+    gainExp() { // Calculate the exponent on main currency from bonuses
+        return new ExpantaNum(1)
+    },
+    row: 0, // Row the layer is in on the tree (0 is the first row)
+    hotkeys: [
+        {key: "m", description: "M: Reset for matter.", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
     layerShown(){return true}
 })
